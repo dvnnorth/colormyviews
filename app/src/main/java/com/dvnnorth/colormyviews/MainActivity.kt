@@ -2,9 +2,12 @@ package com.dvnnorth.colormyviews
 
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.databinding.DataBindingUtil
+import com.dvnnorth.colormyviews.databinding.ActivityMainBinding
+import java.util.Hashtable
 import kotlin.random.Random
 
 private val colorList: List<Int> = listOf(
@@ -12,23 +15,34 @@ private val colorList: List<Int> = listOf(
     Color.BLACK, Color.BLUE, Color.CYAN, Color.GREEN, Color.LTGRAY,
     Color.MAGENTA, Color.RED, Color.YELLOW
 )
+private val colorLookup: Hashtable<String, Long> = Hashtable()
+
+private lateinit var binding: ActivityMainBinding
+private lateinit var clickableViews: List<TextView>
+private lateinit var clickableButtons: List<Button>
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        clickableViews = listOf(
+            binding.boxOneText, binding.boxTwoText, binding.boxThreeText,
+            binding.boxFourText, binding.boxFiveText)
+        clickableButtons = listOf(binding.buttonRed, binding.buttonYellow, binding.buttonGreen)
+        colorLookup["RED"] = 0xFFFF0000
+        colorLookup["YELLOW"] = 0xFFFFFF00
+        colorLookup["GREEN"] = 0xFF00FF00
         setListeners()
     }
 
     private fun setListeners() {
-        val clickableViews: List<TextView> =
-                listOf(
-                    box_one_text, box_two_text, box_three_text,
-                    box_four_text, box_five_text
-                )
-
         for (view in clickableViews) {
             view.setOnClickListener { colorize(it as TextView) }
+        }
+
+        for (view in clickableButtons) {
+            view.setOnClickListener { colorFromButton(it as Button) }
         }
     }
 
@@ -49,5 +63,16 @@ class MainActivity : AppCompatActivity() {
         G = 255 - G
         B = 255 - B
         return R + (G shl 8) + (B shl 16) + (A shl 24)
+    }
+
+    private fun colorFromButton(buttonView: Button) {
+        val newBGcolor: Long? = colorLookup[buttonView.text]
+        newBGcolor?.let {
+            val newTextColor = getComplementaryColor(newBGcolor.toInt())
+            val viewNumber = Random.nextInt(0, clickableViews.size)
+            val view = clickableViews[viewNumber]
+            view.setBackgroundColor(it.toInt())
+            view.setTextColor(newTextColor)
+        }
     }
 }

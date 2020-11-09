@@ -8,4 +8,7 @@
     <string name="button_red">RED</string>
     <string name="button_yellow">YELLOW</string>
     <string name="button_green">GREEN</string>
+    <string name="how_to_text">How to play:</string>
+    <string name="tap_text_and_buttons">Tap the text and buttons</string>
+    <string name="button_explain_text">Press a button to turn a random box that color</string>
 </resources>
